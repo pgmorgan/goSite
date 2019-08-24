@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	"github.com/pgmorgan/go2/046_mongodb/15_postgres/config"
 	"github.com/pgmorgan/goSite/db"
+	"github.com/pgmorgan/goSite/tpl"
 )
 
 func Index(w http.ResponseWriter, req *http.Request) {
@@ -21,5 +21,5 @@ func Index(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	config.TPL.ExecuteTemplate(w, "books.gohtml", data)
+	tpl.TPL.ExecuteTemplate(w, "books.gohtml", data)
 }

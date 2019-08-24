@@ -12,7 +12,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-func dbConnect(user, password string) *mongo.Client {
+//Book holds the author and title strings
+type Book struct {
+	author string
+	title  string
+}
+
+func DBconnect(user, password string) *mongo.Client {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	// client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://root:root@clusterexp-a6bbr.mongodb.net/test?retryWrites=true&w=majority&authSource=admin"))
@@ -22,13 +28,13 @@ func dbConnect(user, password string) *mongo.Client {
 	return client
 }
 
-func dbInsertOne(collection *mongo.Collection, doc interface{}) {
+func DBinsertOne(collection *mongo.Collection, doc interface{}) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	_, err := collection.InsertOne(ctx, doc)
 	check(err)
 }
 
-func dbList(collection *mongo.Collection) {
+func DBlist(collection *mongo.Collection) {
 	var result bson.M
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
@@ -40,9 +46,10 @@ func dbList(collection *mongo.Collection) {
 		check(err)
 		fmt.Println(result)
 	}
+	return listParse(result)
 }
 
-func dbDeleteFiltered(collection *mongo.Collection, filter interface{}) {
+func DBdeleteFiltered(collection *mongo.Collection, filter interface{}) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	_, err := collection.DeleteOne(ctx, filter)
 	check(err)
@@ -54,12 +61,12 @@ func main() {
 	dbName := "test"
 	collName := "numbers"
 	doc := bson.M{"name": "pi", "value": 3.14159}
-	// filter := bson.D{{
-	// "name", bson.D{{
-	// "$in",
-	// bson.A{"pi"},
-	// }},
-	// }}
+	filter := bson.D{{
+		"name", bson.D{{
+			"$in",
+			bson.A{"pi"},
+		}},
+	}}
 
 	// c := color.New(color.FgRed)
 
@@ -67,9 +74,7 @@ func main() {
 	collection := client.Database(dbName).Collection(collName)
 	dbInsertOne(collection, doc)
 	dbList(collection)
-	// dbDeleteFiltered(collection, filter)
-	// dbDeleteFiltered(collection, filter)
-	// dbDeleteFiltered(collection, filter)
+	dbDeleteFiltered(collection, filter)
 }
 
 func check(err error) {

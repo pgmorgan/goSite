@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"net/url"
 
 	"github.com/pgmorgan/goSite/db"
 	"github.com/pgmorgan/goSite/tpl"
@@ -15,7 +16,7 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	// 	books: list,
 	// }
 
-	list, err := db.PublicList()
+	list, err := db.DBlist()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
@@ -28,11 +29,20 @@ func Insert(w http.ResponseWriter, req *http.Request) {
 	book := db.Book{
 		Title: req.FormValue("title"),
 	}
-	err := db.PublicInsertOne(book)
+	err := db.DBinsertOne(book)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
-		log.Fatal(err)
 	}
+
+	http.Redirect(w, req, "/", http.StatusSeeOther)
+}
+
+func Delete(w http.ResponseWriter, req *http.Request) {
+	title, err := url.QueryUnescape(req.FormValue("title"))
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
+	}
+	err := db.DBdeleteOne(title)
 
 	http.Redirect(w, req, "/", http.StatusSeeOther)
 }

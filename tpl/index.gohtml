@@ -9,10 +9,10 @@
 <body>
 <form action="/insert" method="post">
 	<input type="text" name="title" autofocus>
-	<input type="submit">
+	<input type="submit" name="Add to bookshelf">
 </form>
 	{{range .}}
-		<p>{{.}}</p>
+		<p>{{.}} <a href=/delete?title={{.Title | urlescaper}}"</p>
 	{{end}}
 </body>
 </html>

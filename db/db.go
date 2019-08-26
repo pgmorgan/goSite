@@ -33,20 +33,23 @@ func dbConnect(user, password, dbName string) (*mongo.Client, error) {
 	return client, nil
 }
 
-func dbInsertOne(collection *mongo.Collection, doc interface{}) error {
+func DBinsertOne(book Book) error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	_, err := collection.InsertOne(ctx, doc)
-	fmt.Println(doc, err)
+	doc := bson.M{}
+	doc["Title"] = book.Title
+	_, err := globCollection.InsertOne(ctx, doc)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func dbList(collection *mongo.Collection) ([]map[string]string, error) {
+func DBlist() ([]Book, error) {
 	var result bson.M
-	var list []map[string]string
-	m := make(map[string]string)
+	var list []Book
+	var tmp Book
+	// var m map[string]string
+	// m := make(map[string]string)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	// err := globClient.Ping(ctx, readpref.Primary())
@@ -55,7 +58,7 @@ func dbList(collection *mongo.Collection) ([]map[string]string, error) {
 	// 	return nil, nil
 	// }
 
-	cursor, err := collection.Find(ctx, bson.D{})
+	cursor, err := globCollection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
@@ -65,23 +68,32 @@ func dbList(collection *mongo.Collection) ([]map[string]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		// fmt.Println(result["title"])
-		if result["title"] == nil {
+		// fmt.Println(result)
+		if result["Title"] == nil {
 			fmt.Println("reached here!")
 
 			return nil, nil
 		}
-		m["title"] = result["title"].(string)
-		fmt.Println(m)
-		list = append(list, m)
+		// fmt.Println(result, m)
+
+		tmp = Book{Title: result["Title"].(string)}
+		// fmt.Println(m)
+		list = append(list, tmp)
 	}
 	// return listParse(result)
+	fmt.Println(list)
 	return list, nil
 }
 
-func dbDeleteFiltered(collection *mongo.Collection, filter interface{}) error {
+func DBdeleteFiltered(title string) error {
+	filter := bson.D{{
+		"Title", bson.D{{
+			"$in",
+			bson.A{title},
+		}},
+	}}
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	_, err := collection.DeleteOne(ctx, filter)
+	_, err := globCollection.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
@@ -103,34 +115,22 @@ func dbDeleteFiltered(collection *mongo.Collection, filter interface{}) error {
 // 	if err != nil {
 // 		return nil, err
 // 	}
-// 	collection := client.Database(dbName).Collection(collName)
-// 	err = dbInsertOne(collection, doc)
+// 	globCollection := client.Database(dbName).Collection(collName)
+// 	err = dbInsertOne(globCollection, doc)
 // 	if err != nil {
 // 		return nil, err
 // 	}
-// 	err = dbDeleteFiltered(collection, filter)
+// 	err = dbDeleteFiltered(globCollection, filter)
 // 	if err != nil {
 // 		return nil, err
 // 	}
-// 	list, err := dbList(collection)
+// 	list, err := dbList(globCollection)
 // 	if err != nil {
 // 		return nil, err
 // 	}
 // 	fmt.Println(list)
 // 	return list, nil
 // }
-
-func PublicList() ([]map[string]string, error) {
-	return dbList(globCollection)
-}
-
-func PublicInsertOne(book Book) error {
-	doc := bson.M{}
-	doc["Title"] = book.Title
-	// fmt.Println(doc)
-	err := dbInsertOne(globCollection, doc)
-	return err
-}
 
 var globClient *mongo.Client
 var globCollection *mongo.Collection

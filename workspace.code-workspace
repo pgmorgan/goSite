@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "."
+		},
+		{
+			"path": "/home/peter/go/src/github.com/pgmorgan/mongodb-go-tutorial"
 		}
 	],
 	"settings": {}

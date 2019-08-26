@@ -26,7 +26,7 @@ func Index(w http.ResponseWriter, req *http.Request) {
 
 func Insert(w http.ResponseWriter, req *http.Request) {
 	book := db.Book{
-		Title:	"Life of Pi",
+		Title: req.FormValue("title"),
 	}
 	err := db.PublicInsertOne(book)
 	if err != nil {
@@ -34,5 +34,5 @@ func Insert(w http.ResponseWriter, req *http.Request) {
 		log.Fatal(err)
 	}
 
-	Index(w, req)
+	http.Redirect(w, req, "/", http.StatusSeeOther)
 }

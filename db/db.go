@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"fmt"
-	"time"
 	"log"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,13 +14,15 @@ import (
 
 //Book holds the Author and Title strings
 type Book struct {
-	Title	string
+	Title string
 }
 
-func dbConnect(user, password string) (*mongo.Client, error) {
+func dbConnect(user, password, dbName string) (*mongo.Client, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	// Client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://root:root@clusterexp-a6bbr.mongodb.net/test?retryWrites=true&w=majority&authSource=admin"))
+	// "mongodb://localhost:27017"
+	uri := "mongodb+srv://" + user + ":" + password + "@clusterexp-a6bbr.mongodb.net/" +
+		dbName + "?retryWrites=true&w=majority&authSource=admin"
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +49,12 @@ func dbList(collection *mongo.Collection) ([]map[string]string, error) {
 	m := make(map[string]string)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	// err := globClient.Ping(ctx, readpref.Primary())
+	// if err != nil {
+	// 	fmt.Println("reached here too!")
+	// 	return nil, nil
+	// }
+
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
@@ -59,10 +67,12 @@ func dbList(collection *mongo.Collection) ([]map[string]string, error) {
 		}
 		// fmt.Println(result["title"])
 		if result["title"] == nil {
+			fmt.Println("reached here!")
+
 			return nil, nil
 		}
 		m["title"] = result["title"].(string)
-		// fmt.Println(m)
+		fmt.Println(m)
 		list = append(list, m)
 	}
 	// return listParse(result)
@@ -131,7 +141,7 @@ func init() {
 	dbName := "bookshelf"
 	collName := "books"
 
-	globClient, err := dbConnect(atlasUser, atlasPassword)
+	globClient, err := dbConnect(atlasUser, atlasPassword, dbName)
 	if err != nil {
 		log.Fatal(err)
 	}

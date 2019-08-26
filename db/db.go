@@ -14,7 +14,7 @@ import (
 
 //Book holds the author and title strings
 type Book struct {
-	author string
+//	author string
 	title  string
 }
 
@@ -60,7 +60,7 @@ func main() {
 	atlasPassword := "root"
 	dbName := "test"
 	collName := "numbers"
-	doc := bson.M{"name": "pi", "value": 3.14159}
+	doc := bson.M{"name": "pi"}
 	filter := bson.D{{
 		"name", bson.D{{
 			"$in",
@@ -74,7 +74,8 @@ func main() {
 	collection := client.Database(dbName).Collection(collName)
 	dbInsertOne(collection, doc)
 	dbList(collection)
-	dbDeleteFiltered(collection, filter)
+	fmt.Println(filter)
+//	dbDeleteFiltered(collection, filter)
 }
 
 func check(err error) {

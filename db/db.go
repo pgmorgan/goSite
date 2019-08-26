@@ -14,14 +14,14 @@ import (
 
 //Book holds the author and title strings
 type Book struct {
-//	author string
-	title  string
+	//	author string
+	title string
 }
 
 func DBconnect(user, password string) *mongo.Client {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	// client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://root:root@clusterexp-a6bbr.mongodb.net/test?retryWrites=true&w=majority&authSource=admin"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://root:root@clusterexp-a6bbr.mongodb.net/test?retryWrites=true&w=majority&authSource=admin"))
 	check(err)
 	err = client.Ping(ctx, readpref.Primary())
 	check(err)
@@ -46,7 +46,8 @@ func DBlist(collection *mongo.Collection) {
 		check(err)
 		fmt.Println(result)
 	}
-	return listParse(result)
+	// return listParse(result)
+	// return result
 }
 
 func DBdeleteFiltered(collection *mongo.Collection, filter interface{}) {
@@ -55,31 +56,32 @@ func DBdeleteFiltered(collection *mongo.Collection, filter interface{}) {
 	check(err)
 }
 
-func main() {
+func Launch() {
 	atlasUser := "root"
 	atlasPassword := "root"
 	dbName := "test"
 	collName := "numbers"
-	doc := bson.M{"name": "pi"}
-	filter := bson.D{{
-		"name", bson.D{{
-			"$in",
-			bson.A{"pi"},
-		}},
-	}}
+	doc := bson.M{"name": "pi", "value": 3.2}
+	// filter := bson.D{{
+	// 	"name", bson.D{{
+	// 		"$in",
+	// 		bson.A{"pi"},
+	// 	}},
+	// }}
 
 	// c := color.New(color.FgRed)
 
-	client := dbConnect(atlasUser, atlasPassword)
+	client := DBconnect(atlasUser, atlasPassword)
 	collection := client.Database(dbName).Collection(collName)
-	dbInsertOne(collection, doc)
-	dbList(collection)
-	fmt.Println(filter)
-//	dbDeleteFiltered(collection, filter)
+	DBinsertOne(collection, doc)
+	// DBlist(collection)
+	// fmt.Println(filter)
+	//	dbDeleteFiltered(collection, filter)
 }
 
 func check(err error) {
 	if err != nil {
+		fmt.Println(err)
 		log.Fatal(err)
 	}
 }

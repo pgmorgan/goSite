@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -18,70 +17,95 @@ type Book struct {
 	title string
 }
 
-func DBconnect(user, password string) *mongo.Client {
+func DBconnect(user, password string) (*mongo.Client, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	// client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://root:root@clusterexp-a6bbr.mongodb.net/test?retryWrites=true&w=majority&authSource=admin"))
-	check(err)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb+srv://root:root@clusterexp-a6bbr.mongodb.net/test?retryWrites=true&w=majority&authSource=admin"))
+	if err != nil {
+		return nil, err
+	}
 	err = client.Ping(ctx, readpref.Primary())
-	check(err)
-	return client
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
 }
 
-func DBinsertOne(collection *mongo.Collection, doc interface{}) {
+func DBinsertOne(collection *mongo.Collection, doc interface{}) error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	_, err := collection.InsertOne(ctx, doc)
-	check(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func DBlist(collection *mongo.Collection) {
+func DBlist(collection *mongo.Collection) ([]map[string]float64, error) {
 	var result bson.M
+	var list []map[string]float64
+	m := make(map[string]float64)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	cursor, err := collection.Find(ctx, bson.D{})
-	check(err)
+	if err != nil {
+		return nil, err
+	}
 	defer cursor.Close(ctx)
 	for cursor.Next(ctx) {
 		err = cursor.Decode(&result)
-		check(err)
-		fmt.Println(result)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Println(result["name"], result["value"])
+		m[result["name"].(string)] = result["value"].(float64)
+		fmt.Println(m)
+		list = append(list, m)
 	}
 	// return listParse(result)
-	// return result
+	return list, nil
 }
 
-func DBdeleteFiltered(collection *mongo.Collection, filter interface{}) {
+func DBdeleteFiltered(collection *mongo.Collection, filter interface{}) error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	_, err := collection.DeleteOne(ctx, filter)
-	check(err)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func Launch() {
+func Launch() ([]map[string]float64, error) {
 	atlasUser := "root"
 	atlasPassword := "root"
 	dbName := "test"
 	collName := "numbers"
 	doc := bson.M{"name": "pi", "value": 3.2}
-	// filter := bson.D{{
-	// 	"name", bson.D{{
-	// 		"$in",
-	// 		bson.A{"pi"},
-	// 	}},
-	// }}
+	filter := bson.D{{
+		"name", bson.D{{
+			"$in",
+			bson.A{"pi"},
+		}},
+	}}
 
 	// c := color.New(color.FgRed)
 
-	client := DBconnect(atlasUser, atlasPassword)
-	collection := client.Database(dbName).Collection(collName)
-	DBinsertOne(collection, doc)
-	// DBlist(collection)
-	// fmt.Println(filter)
-	//	dbDeleteFiltered(collection, filter)
-}
-
-func check(err error) {
+	client, err := DBconnect(atlasUser, atlasPassword)
 	if err != nil {
-		fmt.Println(err)
-		log.Fatal(err)
+		return nil, err
 	}
+	collection := client.Database(dbName).Collection(collName)
+	err = DBinsertOne(collection, doc)
+	if err != nil {
+		return nil, err
+	}
+	err = DBdeleteFiltered(collection, filter)
+	if err != nil {
+		return nil, err
+	}
+	list, err := DBlist(collection)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(list)
+	return list, nil
 }

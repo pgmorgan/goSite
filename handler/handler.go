@@ -15,11 +15,24 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	// 	books: list,
 	// }
 
-	list, err := db.Launch()
+	list, err := db.PublicList()
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 	}
 
 	tpl.TPL.ExecuteTemplate(w, "index.gohtml", list)
+}
+
+func Insert(w http.ResponseWriter, req *http.Request) {
+	book := db.Book{
+		Title:	"Life of Pi",
+	}
+	err := db.PublicInsertOne(book)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
+		log.Fatal(err)
+	}
+
+	Index(w, req)
 }

@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	http.HandleFunc("/search", handler.Search)
 	http.HandleFunc("/insert", handler.Insert)
 	http.HandleFunc("/delete", handler.Delete)
 	http.HandleFunc("/", handler.Index)

@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"log"
+	"net/url"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +14,7 @@ import (
 
 //Book holds the Author and Title strings
 type Book struct {
-	Title string
+	Title, URLtitle string
 }
 
 func dbConnect(user, password, dbName string) (*mongo.Client, error) {
@@ -48,16 +48,8 @@ func DBlist() ([]Book, error) {
 	var result bson.M
 	var list []Book
 	var tmp Book
-	// var m map[string]string
-	// m := make(map[string]string)
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	// err := globClient.Ping(ctx, readpref.Primary())
-	// if err != nil {
-	// 	fmt.Println("reached here too!")
-	// 	return nil, nil
-	// }
-
 	cursor, err := globCollection.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
@@ -68,24 +60,20 @@ func DBlist() ([]Book, error) {
 		if err != nil {
 			return nil, err
 		}
-		// fmt.Println(result)
 		if result["Title"] == nil {
-			fmt.Println("reached here!")
-
 			return nil, nil
 		}
-		// fmt.Println(result, m)
 
-		tmp = Book{Title: result["Title"].(string)}
-		// fmt.Println(m)
+		tmp = Book{
+			Title:    result["Title"].(string),
+			URLtitle: url.QueryEscape(result["Title"].(string)),
+		}
 		list = append(list, tmp)
 	}
-	// return listParse(result)
-	fmt.Println(list)
 	return list, nil
 }
 
-func DBdeleteFiltered(title string) error {
+func DBdeleteOne(title string) error {
 	filter := bson.D{{
 		"Title", bson.D{{
 			"$in",

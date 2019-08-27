@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/pgmorgan/goSite/bookapi"
 	"github.com/pgmorgan/goSite/db"
 	"github.com/pgmorgan/goSite/tpl"
 )
@@ -38,11 +39,20 @@ func Insert(w http.ResponseWriter, req *http.Request) {
 }
 
 func Delete(w http.ResponseWriter, req *http.Request) {
-	title, err := url.QueryUnescape(req.FormValue("title"))
+	title, err := url.QueryUnescape(req.FormValue("urltitle"))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
 	}
-	err := db.DBdeleteOne(title)
+	err = db.DBdeleteOne(title)
 
 	http.Redirect(w, req, "/", http.StatusSeeOther)
+}
+
+func Search(w http.ResponseWriter, req *http.Request) {
+	title := req.FormValue("title")
+	results, err := bookapi.FindTopTen(title)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError)+err.Error(), http.StatusInternalServerError)
+	}
+	tpl.TPL.ExecuteTemplate(w, "index2.gohtml", results)
 }

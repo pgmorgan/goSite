@@ -1,14 +1,16 @@
 {
 	"folders": [
 		{
-			"path": "/home/peter/go/src/github.com/pgmorgan/goWebDevCourse/046_mongodb/17_pgm"
-		},
-		{
-			"path": "/home/peter/go/src/github.com/pgmorgan/goWebDevCourse/046_mongodb"
-		},
-		{
 			"path": "."
+		},
+		{
+			"path": "/home/peter/go/src/playground"
+		},
+		{
+			"path": "/home/peter/go/src/github.com/pgmorgan/goWebDevCourse"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "goWebDevCourse"
+	}
 }

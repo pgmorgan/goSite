@@ -7,15 +7,11 @@
 	<title>Document</title>
 </head>
 <body>
-	<!-- <label for="booktitle">Enter a Book Title</label>
-	<input type="text" id="booktitle" class="form-control"> -->
 	<form action="/search" method="get">
 		<input type="text" name="title" autofocus>
 		<input type="submit">
 	</form>
 
-	{{range .}}
-		<p>{{.Title}} - <a href="/delete?urltitle={{.URLtitle}}">Delete</a></p>
-	{{end}}
+	<p>{{.}}</p> 
 </body>
 </html>

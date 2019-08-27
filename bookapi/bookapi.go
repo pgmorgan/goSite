@@ -2,21 +2,27 @@ package bookapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/pgmorgan/goSite/db"
 )
 
-func FindTopTen(title string) ([]db.Book, error) {
-	// url := "https://www.googleapis.com/books/v1/volumes?q=harry+potter"
-	url := "http://api.open-notify.org/astros.json"
+type volume struct {
+	Title string `json:"title"`
+}
 
-	type rawJSON struct {
-		Number int `json:"number"`
-	}
+type itemInfo struct {
+	VolumeInfo volume `json:volumeInfo"`
+	// Kind string `json:"kind"`
+}
+
+type jsonObject struct {
+	Items []itemInfo `json:"items"`
+}
+
+func FindTopTen(title string) (jsonObject, error) {
+	url := "https://www.googleapis.com/books/v1/volumes?q=harry+potter"
+	obj := jsonObject{}
 
 	clientTimeout := http.Client{
 		Timeout: time.Second * 4,
@@ -24,27 +30,21 @@ func FindTopTen(title string) ([]db.Book, error) {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, err
+		return obj, err
 	}
-
 	req.Header.Set("User-Agent", "book-request-api-call")
-
 	res, err := clientTimeout.Do(req)
 	if err != nil {
-		return nil, err
+		return obj, err
 	}
-
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return obj, err
 	}
-
-	bookInfo := rawJSON{}
-	err = json.Unmarshal(body, &bookInfo)
+	err = json.Unmarshal(body, &obj)
 	if err != nil {
-		return nil, err
+		return obj, err
 	}
 
-	fmt.Println(bookInfo.Number)
-	return nil, nil
+	return obj, nil
 }

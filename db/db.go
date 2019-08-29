@@ -139,7 +139,7 @@ func DBidAlreadyListed(id string) (bool, error) {
 }
 
 func init() {
-	wait = 10
+	wait = 20
 	atlasUser := "root"
 	atlasPassword := "root"
 	clusterName := "cluster0"

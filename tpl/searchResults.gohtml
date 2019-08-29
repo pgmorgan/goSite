@@ -11,7 +11,8 @@
 		<input type="text" name="title" autofocus>
 		<input type="submit">
 	</form>
-
-	<p>{{.}}</p> 
+	{{range .Items}}
+		<p><a href="/add?id={{.ID}}">{{.VolumeInfo.Title}} - {{index .VolumeInfo.Author 0}}</a></p>
+	{{end}}
 </body>
 </html>

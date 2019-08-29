@@ -15,7 +15,17 @@
 	</form>
 
 	{{range .}}
-		<p>{{.Title}} - <a href="/delete?urltitle={{.URLtitle}}">Delete</a></p>
+		<p>{{.Title}}
+		{{if .Author}}
+		 - {{.Author}}
+		{{else}}{{end}}
+		{{if .Price}}
+		  - ${{.Price}}
+		{{else}}{{end}}
+		{{if .BuyLink}}
+		    - <a href="{{.BuyLink}}">Buy</a> 
+		{{else}}{{end}}
+		 <a href="/delete?urltitle={{.URLtitle}}">Delete</a></p>
 	{{end}}
 </body>
 </html>

@@ -9,8 +9,13 @@ import (
 )
 
 type Volume struct {
-	Title  string   `json:"title"`
-	Author []string `json:"authors"`
+	Title   string     `json:"title"`
+	Author  []string   `json:"authors"`
+	ImgLink imgLinkObj `json:"imageLinks"`
+}
+
+type imgLinkObj struct {
+	Thumb string `json:"thumbnail"`
 }
 
 type ItemInfo struct {

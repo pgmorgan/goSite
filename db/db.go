@@ -14,7 +14,7 @@ import (
 
 //Book holds the Author and Title strings
 type Book struct {
-	Title, URLtitle, Author, ID, Price, BuyLink string
+	Title, URLtitle, Author, ID, Price, BuyLink, ThumbURL string
 }
 
 var wait time.Duration
@@ -48,6 +48,7 @@ func DBinsertOne(book Book, userEmail string) error {
 	// doc["Currency"] = book.Currency
 	doc["BuyLink"] = book.BuyLink
 	doc["ID"] = book.ID
+	doc["ThumbURL"] = book.ThumbURL
 	_, err := coll.InsertOne(ctx, doc)
 	if err != nil {
 		return err

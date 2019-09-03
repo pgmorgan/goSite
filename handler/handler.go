@@ -1,11 +1,9 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"github.com/pgmorgan/goSite/bookapi"
 	"github.com/pgmorgan/goSite/db"
@@ -39,17 +37,9 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	tpl.TPL.ExecuteTemplate(w, "index.gohtml", data)
 }
 
-func Insert(w http.ResponseWriter, req *http.Request) {
+func insert(w http.ResponseWriter, req *http.Request, book db.Book) {
 	var err error
 
-	book := db.Book{
-		Title:  req.FormValue("title"),
-		Author: req.FormValue("author"),
-		Price:  req.FormValue("price"),
-		// Currency: req.FormValue("currency"),
-		BuyLink: req.FormValue("buylink"),
-		ID:      req.FormValue("id"),
-	}
 	userEmail, loggedIn := users.AlreadyLoggedIn(req)
 	if loggedIn {
 		err = db.DBinsertOne(book, userEmail)
@@ -95,6 +85,7 @@ func Search(w http.ResponseWriter, req *http.Request) {
 func Add(w http.ResponseWriter, req *http.Request) {
 	var err error
 	var alreadyListed bool
+	var uri string
 
 	id := req.FormValue("id")
 	userEmail, loggedIn := users.AlreadyLoggedIn(req)
@@ -111,24 +102,31 @@ func Add(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 	}
 	result, err := bookapi.FindOne(id)
+
+	// Currency: req.FormValue("currency"),
+
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)
 	}
-	if result.SaleInfo.RetailPrice.Amount == 0 {
-		fmt.Println("Reached here!")
-		http.Redirect(w, req, "/insert"+
-			"?title="+result.VolumeInfo.Title+
-			"&author="+result.VolumeInfo.Author[0],
-			http.StatusSeeOther)
-	} else {
-		http.Redirect(w, req, "/insert"+
-			"?title="+result.VolumeInfo.Title+
-			"&author="+result.VolumeInfo.Author[0]+
-			"&id="+result.ID+
-			"&price="+strconv.FormatFloat(result.SaleInfo.RetailPrice.Amount, 'f', 2, 64)+
-			// "&currency="+result.SaleInfo.RetailPrice.Currency+
-			"&buylink="+result.SaleInfo.BuyLink,
-			http.StatusSeeOther)
+	book := db.Book{
+		Title:    result.VolumeInfo.Title,
+		Author:   result.VolumeInfo.Author[0],
+		ThumbURL: result.VolumeInfo.ImgLink.Thumb,
+		ID:       result.ID,
 	}
+	if result.SaleInfo.RetailPrice.Amount != 0 {
+		book = db.Book{
+			Price:   result.SaleInfo.RetailPrice.Amount,
+			BuyLink: result.SaleInfo.BuyLink,
+		}
+	}
+	insert(w, req, book)
 }
+
+// fmt.Println("Reached here!")
+// http.Redirect(w, req, "/insert"+
+// 	"?title="+result.VolumeInfo.Title+
+// 	"&author="+result.VolumeInfo.Author[0]+
+// 	"&thumb="+url.PathEscape(result.VolumeInfo.ImgLink.Thumb),
+// 	http.StatusSeeOther)

@@ -14,7 +14,14 @@ import (
 )
 
 func Index(w http.ResponseWriter, req *http.Request) {
-	list, err := db.DBlist()
+	userEmail, loggedIn := users.AlreadyLoggedIn(req)
+	var err error
+	var list []db.Book
+	if loggedIn {
+		list, err = db.DBlist(userEmail)
+	} else {
+		list, err = db.DBlist("public")
+	}
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)
@@ -26,13 +33,15 @@ func Index(w http.ResponseWriter, req *http.Request) {
 		DloggedIn bool
 	}{
 		list,
-		users.AlreadyLoggedIn(req),
+		loggedIn,
 	}
 
 	tpl.TPL.ExecuteTemplate(w, "index.gohtml", data)
 }
 
 func Insert(w http.ResponseWriter, req *http.Request) {
+	var err error
+
 	book := db.Book{
 		Title:  req.FormValue("title"),
 		Author: req.FormValue("author"),
@@ -41,7 +50,12 @@ func Insert(w http.ResponseWriter, req *http.Request) {
 		BuyLink: req.FormValue("buylink"),
 		ID:      req.FormValue("id"),
 	}
-	err := db.DBinsertOne(book)
+	userEmail, loggedIn := users.AlreadyLoggedIn(req)
+	if loggedIn {
+		err = db.DBinsertOne(book, userEmail)
+	} else {
+		err = db.DBinsertOne(book, "public")
+	}
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)
@@ -51,12 +65,19 @@ func Insert(w http.ResponseWriter, req *http.Request) {
 }
 
 func Delete(w http.ResponseWriter, req *http.Request) {
+	var err error
+
 	title, err := url.QueryUnescape(req.FormValue("urltitle"))
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)
 	}
-	err = db.DBdeleteOne(title)
+	userEmail, loggedIn := users.AlreadyLoggedIn(req)
+	if loggedIn {
+		err = db.DBdeleteOne(title, userEmail)
+	} else {
+		err = db.DBdeleteOne(title, "public")
+	}
 
 	http.Redirect(w, req, "/", http.StatusSeeOther)
 }
@@ -72,8 +93,16 @@ func Search(w http.ResponseWriter, req *http.Request) {
 }
 
 func Add(w http.ResponseWriter, req *http.Request) {
+	var err error
+	var alreadyListed bool
+
 	id := req.FormValue("id")
-	alreadyListed, err := db.DBidAlreadyListed(id)
+	userEmail, loggedIn := users.AlreadyLoggedIn(req)
+	if loggedIn {
+		alreadyListed, err = db.DBidAlreadyListed(id, userEmail)
+	} else {
+		alreadyListed, err = db.DBidAlreadyListed(id, "public")
+	}
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)

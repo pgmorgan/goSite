@@ -39,18 +39,18 @@ func populateDbUsers() {
 	}
 }
 
-func AlreadyLoggedIn(req *http.Request) bool {
+func AlreadyLoggedIn(req *http.Request) (string, bool) {
 	c, err := req.Cookie("session")
 	if err != nil {
-		return false
+		return "", false
 	}
-	un := dbSessions[c.Value]
-	_, ok := dbUsers[un]
-	return ok
+	em := dbSessions[c.Value]
+	_, ok := dbUsers[em]
+	return em, ok
 }
 
 func SignUp(w http.ResponseWriter, req *http.Request) {
-	if AlreadyLoggedIn(req) {
+	if _, ok := AlreadyLoggedIn(req); ok {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
@@ -100,7 +100,7 @@ func SignUp(w http.ResponseWriter, req *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, req *http.Request) {
-	if !AlreadyLoggedIn(req) {
+	if _, ok := AlreadyLoggedIn(req); !ok {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
@@ -122,4 +122,39 @@ func check(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Login(w http.ResponseWriter, req *http.Request) {
+	if _, ok := AlreadyLoggedIn(req); ok {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	var u user
+	// process form submission
+	if req.Method == http.MethodPost {
+		em := req.FormValue("email")
+		p := req.FormValue("password")
+		u, ok := dbUsers[em]
+		if !ok {
+			http.Error(w, "<h2>Username and/or password do not match</h2>", http.StatusForbidden)
+			return
+		}
+		// does the entered password match the stored password?
+		err := bcrypt.CompareHashAndPassword(u.Password, []byte(p))
+		if err != nil {
+			http.Error(w, "Username and/or password do not match", http.StatusForbidden)
+			return
+		}
+		// create session
+		sID, _ := uuid.NewV4()
+		c := &http.Cookie{
+			Name:  "session",
+			Value: sID.String(),
+		}
+		http.SetCookie(w, c)
+		dbSessions[c.Value] = em
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	tpl.TPL.ExecuteTemplate(w, "login.gohtml", u)
 }

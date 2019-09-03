@@ -20,6 +20,7 @@ type Book struct {
 var wait time.Duration
 var globClient *mongo.Client
 var globCollection *mongo.Collection
+var dbName = "bookstore"
 
 func dbConnect(user, password, clusterName, dbName string) (*mongo.Client, error) {
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
@@ -37,7 +38,8 @@ func dbConnect(user, password, clusterName, dbName string) (*mongo.Client, error
 	return client, nil
 }
 
-func DBinsertOne(book Book) error {
+func DBinsertOne(book Book, userEmail string) error {
+	coll := globClient.Database(dbName).Collection(userEmail)
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
 	doc := bson.M{}
 	doc["Title"] = book.Title
@@ -46,20 +48,21 @@ func DBinsertOne(book Book) error {
 	// doc["Currency"] = book.Currency
 	doc["BuyLink"] = book.BuyLink
 	doc["ID"] = book.ID
-	_, err := globCollection.InsertOne(ctx, doc)
+	_, err := coll.InsertOne(ctx, doc)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func DBlist() ([]Book, error) {
+func DBlist(userEmail string) ([]Book, error) {
 	var result bson.M
 	var list []Book
 	var tmp Book
 
+	coll := globClient.Database(dbName).Collection(userEmail)
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
-	cursor, err := globCollection.Find(ctx, bson.D{})
+	cursor, err := coll.Find(ctx, bson.D{})
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +104,8 @@ func DBlist() ([]Book, error) {
 	return list, nil
 }
 
-func DBdeleteOne(title string) error {
+func DBdeleteOne(title, userEmail string) error {
+	coll := globClient.Database(dbName).Collection(userEmail)
 	filter := bson.D{{
 		"Title", bson.D{{
 			"$in",
@@ -109,18 +113,19 @@ func DBdeleteOne(title string) error {
 		}},
 	}}
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
-	_, err := globCollection.DeleteOne(ctx, filter)
+	_, err := coll.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func DBidAlreadyListed(id string) (bool, error) {
+func DBidAlreadyListed(id, userEmail string) (bool, error) {
 	var result bson.M
 
+	coll := globClient.Database(dbName).Collection(userEmail)
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
-	cursor, err := globCollection.Find(ctx, bson.D{})
+	cursor, err := coll.Find(ctx, bson.D{})
 	if err != nil {
 		return true, err
 	}
@@ -138,16 +143,16 @@ func DBidAlreadyListed(id string) (bool, error) {
 }
 
 func init() {
+	var err error
+
 	wait = 10
 	atlasUser := "root"
 	atlasPassword := "root"
 	clusterName := "cluster0"
-	dbName := "bookstore"
-	collName := "books"
 
-	globClient, err := dbConnect(atlasUser, atlasPassword, clusterName, dbName)
+	globClient, err = dbConnect(atlasUser, atlasPassword, clusterName, dbName)
 	if err != nil {
 		log.Fatal(err)
 	}
-	globCollection = globClient.Database(dbName).Collection(collName)
+	// fmt.Println(globClient)
 }

@@ -100,6 +100,11 @@ func DBlist(userEmail string) ([]Book, error) {
 		} else {
 			tmp.BuyLink = result["BuyLink"].(string)
 		}
+		if result["ThumbURL"] == nil {
+			tmp.ThumbURL = ""
+		} else {
+			tmp.ThumbURL = result["ThumbURL"].(string)
+		}
 		list = append(list, tmp)
 	}
 	return list, nil

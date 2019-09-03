@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceRoot}",
+            "program": "/home/peter/go/src/github.com/pgmorgan/goSite"
             "env": {},
             "args": []
         }

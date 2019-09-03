@@ -18,6 +18,8 @@ type Book struct {
 }
 
 var wait time.Duration
+var globClient *mongo.Client
+var globCollection *mongo.Collection
 
 func dbConnect(user, password, clusterName, dbName string) (*mongo.Client, error) {
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
@@ -113,9 +115,6 @@ func DBdeleteOne(title string) error {
 	}
 	return nil
 }
-
-var globClient *mongo.Client
-var globCollection *mongo.Collection
 
 func DBidAlreadyListed(id string) (bool, error) {
 	var result bson.M

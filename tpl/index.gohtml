@@ -14,7 +14,13 @@
 		<input type="submit">
 	</form>
 
-	{{range .}}
+	{{if .DloggedIn}}
+		<p>Welcome! <a href="/logout">Logout</a></p>
+	{{else}}
+		<p><a href="/signup">Sign Up</a></p>
+	{{end}}
+
+	{{range .Dlist}}
 		<p>{{.Title}}
 		{{if .Author}}
 		 - {{.Author}}

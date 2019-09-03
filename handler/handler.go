@@ -10,6 +10,7 @@ import (
 	"github.com/pgmorgan/goSite/bookapi"
 	"github.com/pgmorgan/goSite/db"
 	"github.com/pgmorgan/goSite/tpl"
+	"github.com/pgmorgan/goSite/users"
 )
 
 func Index(w http.ResponseWriter, req *http.Request) {
@@ -19,9 +20,16 @@ func Index(w http.ResponseWriter, req *http.Request) {
 			err.Error(), http.StatusInternalServerError)
 		log.Fatal(err)
 	}
-	fmt.Println(list)
 
-	tpl.TPL.ExecuteTemplate(w, "index.gohtml", list)
+	data := struct {
+		Dlist     []db.Book
+		DloggedIn bool
+	}{
+		list,
+		users.AlreadyLoggedIn(req),
+	}
+
+	tpl.TPL.ExecuteTemplate(w, "index.gohtml", data)
 }
 
 func Insert(w http.ResponseWriter, req *http.Request) {

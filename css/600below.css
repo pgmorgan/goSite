@@ -1,0 +1,53 @@
+/*----------------------*/
+/*--------HEADER--------*/
+/*----------------------*/
+
+#header  {
+    justify-content:    space-between;
+}
+
+.besideHeader {
+    display:            none;
+}
+
+    /*----------------------*/
+    /*-----HEADER LOGO------*/
+    /*----------------------*/
+
+a#logo                  {
+    font-size:      1.0rem;
+}
+
+.burgerMenu{
+    display:            flex;
+    height:             80%;
+    position:           relative;
+    right:              1.5rem;
+    align-items:        center;
+}
+
+.burgerIcon{
+    height:             80%;
+    position:           relative;
+    right:              -0.30rem;
+}
+
+.burgerIconLink{
+    height:             80%;
+    position:           relative;
+    right:              -0.30rem;
+    top:                0.1rem;
+    padding:            0 15px 0 0;
+}
+
+#menu {
+    display:            none;
+}
+
+div#pageFold   {
+    background-image:   url(../images/background-photo-mobile.jpg);
+}
+
+#floatingSpan {
+    top:                8vh;
+}

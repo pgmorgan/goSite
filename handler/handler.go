@@ -35,7 +35,7 @@ func Index(w http.ResponseWriter, req *http.Request) {
 		loggedIn,
 	}
 
-	tpl.TPL.ExecuteTemplate(w, "index2.gohtml", data)
+	tpl.TPL.ExecuteTemplate(w, "index.gohtml", data)
 }
 
 func insert(w http.ResponseWriter, req *http.Request, book db.Book) {

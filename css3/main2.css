@@ -1,0 +1,246 @@
+/*----------------------*/
+/*--------GENERAL-------*/
+/*----------------------*/
+
+.h1      {
+    font-family:        'Roboto', sans-serif;
+    font-size:          1.5rem;
+    box-sizing:         border-box;
+}
+
+a:hover {
+    background-color:   rgba(200, 200, 200, 1);
+}
+#submitQuery:hover {
+    background-color:   rgba(160, 160, 160, 1);
+}
+
+/*----------------------*/
+/*--------HEADER--------*/
+/*----------------------*/
+
+#parentHeader {
+    display:            flex;
+    justify-content:    space-around;
+}
+
+.besideHeader {
+    background-color:   rgb(245, 245, 245, 1.00);
+    width:              50vw;
+    height:             45px;
+}
+
+#header {
+    /* FORMAT */
+    background-color:   rgb(245, 245, 245, 1.00);
+    border-bottom:      0.5px solid rgba(0,0,0,0.3);
+    position:           fixed;
+    width:              100vw;
+    max-width:          1400px;
+    height:             45px;
+    /* min-height:         2rem; */
+    /* z-index:            1; */
+
+    /* FONT */
+    font-weight:        bold;
+    font-family:        'Roboto', sans-serif;
+    font-size:          1.rem;
+    text-transform:     uppercase;
+
+    /* FLEXBOX */
+    display:            flex;
+    flex-flow:          row nowrap;
+    align-items:        center;
+    justify-content:    space-between;
+}
+
+    /*----------------------*/
+    /*-----HEADER LOGO------*/
+    /*----------------------*/
+
+a#logo                  {
+    font-family:   'Righteous', sans-serif; 
+    white-space:    nowrap;
+    box-sizing:     border-box;
+    padding:        14px 4rem;
+}
+@media (max-width: 850px) {
+    a#logo {
+        padding:    14px 1rem;
+    }
+}
+
+a#logo, a.menuButton    {
+    border-radius: 0.4rem;
+}
+
+    /*----------------------*/
+    /*-------NAV MENU-------*/
+    /*----------------------*/
+
+a.menuButton {
+    padding:       11px 2.0vw;
+}
+
+#menu {
+    width:              70vw;
+    display:            flex;
+    flex-flow:          row nowrap;
+    justify-content:    flex-end;
+}
+
+.burgerMenu {
+    display:    none;
+}
+
+#dropdownContent {
+    display:            none;
+}
+
+.dropdownContentClass {
+    display:            none;
+}
+
+/*----------------------*/
+/* ---PAGE FOLD IMAGE---*/
+/*----------------------*/
+
+div#pageFold {
+    background-image:   url(bookshelf1.jpg);
+}
+
+div#pageFold   {
+    height:             100vh;
+    background-size:    cover;
+    background-repeat:  no-repeat;
+    background-position:    center top;
+
+    display:            flex;
+    justify-content:    space-around;  
+}
+
+
+div#behindNav {
+    height:             4.5vh;
+}
+
+.centerBody {
+    width:              100vw;
+    max-width:          1400px;
+    /* border:             2px solid hotpink; */
+    
+    display:            flex;
+    flex-flow:          column nowrap;
+    justify-content:    start;
+    align-items:        center;
+    background:         rgba(255,255,255,0.2);
+}
+
+.spacer {
+    height:             30px;
+}
+
+#greySearchDiv {
+    width:              100%;
+    padding:            5px 3px;
+    display:            flex;
+    flex-flow:          row nowrap;
+    justify-content:    space-between;
+    align-items:        center;
+    background-color:   rgba(80, 80, 80, 1);
+    border:             1px solid black;
+    border-radius:      0.3rem;
+}
+
+#searchBar {
+    height:             2.5rem;
+    border-radius:      0.3rem;
+    margin:             0 0 0 5px;
+    padding:            0 0 0 10px;
+    font-family:        'Roboto', sans-serif;
+    font-weight:        bold;
+    font-size:          1.25rem;
+    flex-grow:          1;
+}
+
+#submitQuery {
+    height:             2.5rem;
+    margin:             0 5px 0 5px;
+    background-color:   rgba(120, 120, 120, 1);
+    border:             1px solid black;
+    border-radius:      0.3rem;
+    padding:            10px;
+    font-family:        'Roboto', sans-serif;
+    font-weight:        bold;
+    cursor:             pointer;
+    flex-shrink:        1;
+}
+
+#whiteSearchBorder {
+    width:              70vw;
+    max-width:          700px;
+    padding:            5px;
+    background-color:   rgba(255, 255, 255, 0.75);
+    border-radius:      0.3rem;
+    border:             1px solid black;
+}
+
+img {
+    border:             2px solid black;
+    height:             150px;
+    width:              auto;
+}
+
+span.book {
+    display:            flex;
+    flex-flow:          row nowrap;
+    margin:             20px;
+}
+
+span.bookDetails {
+    display:            flex;
+    flex-flow:          column nowrap;
+    justify-content:    space-evenly;
+    align-items:        center;
+    background-color:   rgba(120, 120, 120, 1);
+    height:             150px;
+    border-left:        2px solid black;
+    border-top:         2px solid black;
+    border-bottom:      2px solid black;
+}
+
+.detail {
+    border-bottom:      1px solid black;
+    height:             25px;
+    width:              300px;
+    text-align:         center;
+    display:            flex;
+    align-items:        center;
+    justify-content:    center;
+}
+
+.title {
+    border-bottom:      1px solid black;
+    height:             50px;
+    width:              300px;
+    text-align:         center;
+    display:            flex;
+    align-items:        center;
+    justify-content:    center;
+}
+
+.ps {
+    font-family:        'Roboto', sans-serif;
+}
+
+div#allBooks {
+    display:            flex;
+    flex-flow:          row wrap;
+    justify-content:    center;
+}
+
+.italics {
+    font-style:         italic;    
+}
+
+

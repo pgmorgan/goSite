@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("css"))))
 	http.HandleFunc("/add", handler.Add)
 	http.HandleFunc("/search", handler.Search)
 	// http.HandleFunc("/insert", handler.Insert)

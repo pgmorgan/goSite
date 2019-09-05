@@ -74,13 +74,23 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 }
 
 func Search(w http.ResponseWriter, req *http.Request) {
+	_, loggedIn := users.AlreadyLoggedIn(req)
 	title := req.FormValue("title")
 	results, err := bookapi.FindTopTen(title)
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)
 	}
-	tpl.TPL.ExecuteTemplate(w, "searchResults.gohtml", results)
+
+	data := struct {
+		Results   bookapi.JsonObjects
+		DloggedIn bool
+	}{
+		results,
+		loggedIn,
+	}
+
+	tpl.TPL.ExecuteTemplate(w, "searchResults.gohtml", data)
 }
 
 func Add(w http.ResponseWriter, req *http.Request) {

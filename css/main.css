@@ -273,4 +273,18 @@ div#allBooks {
     font-style:         italic;    
 }
 
+/*----------------------*/
+/*----SEARCH RESULTS----*/
+/*----------------------*/
+
+.searchResult {
+    width:              100vw;
+    max-width:          500px;
+    min-height:             30px;
+    background-color:   rgba(200,200,200,1);
+    text-align:         center;
+    vertical-align:     middle;
+    border:             1px solid black;
+    padding:            0.4rem 0 0.4rem 0;
+}
 

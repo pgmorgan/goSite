@@ -1,8 +1,19 @@
+/*----------------------*/
+/*--------HEADER--------*/
+/*----------------------*/
+
 #header {
     flex-flow:      column nowrap;
     align-items:    center;
     position:       static;
     height:         135px;
+}
+
+#headerLoggedIn {
+    flex-flow:      column nowrap;
+    align-items:    center;
+    position:       static;
+    height:         90px;
 }
 
 #logo {

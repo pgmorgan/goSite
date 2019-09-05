@@ -16,17 +16,22 @@
 <body>
 	<div id="parentHeader">
 		<span class="besideHeader"></span>
-		<span id="header">
-			<a href="/" id="logo">MY BOOKSHELF APP</a>
-			<ul id="menu">
-				{{if .DloggedIn}}
-					<li><a class="menuButton" href="/logout">Logout</a></li>
-				{{else}}
+		{{if .DloggedIn}}
+			<span id="headerLoggedIn">
+				<a href="/" id="logo">MY BOOKSHELF APP</a>
+				<ul id="menu">
+						<li><a class="menuButton" href="/logout">Logout</a></li>
+				</ul>
+			</span>
+		{{else}}
+			<span id="header">
+				<a href="/" id="logo">MY BOOKSHELF APP</a>
+				<ul id="menu">
 					<li><a class="menuButton" href="/signup">Sign Up</a></li>
 					<li><a class="menuButton" href="/login">Login</a></li>
-				{{end}}
-			</ul>
-		</span>
+				</ul>
+			</span>
+		{{end}}	
 		<span class="besideHeader"></span>
 	</div>
 	<div id="pageFold">
@@ -36,7 +41,7 @@
 			<form action="/search" method="get" id="searchForm">
 				<div id="whiteSearchBorder">
 					<div id="greySearchDiv">
-						<input type="text" name="title" id="searchBar" autofocus="" placeholder="Search Book Title">
+						<input type="text" name="title" class="searchBar" autofocus="" placeholder="Search Book Title">
 						<input type="submit" value="SEARCH BOOKS" id="submitQuery">
 					</div>
 				</div>

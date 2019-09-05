@@ -1,10 +1,14 @@
+/*----------------------*/
+/*-----SEARCH BAR-------*/
+/*----------------------*/
+
 #greySearchDiv {
     flex-flow:  column nowrap;
     align-items:    end;
     padding:        3px;
 }
 
-#searchBar {
+.searchBar {
     width:      97%;
 }
 
@@ -14,7 +18,13 @@
     display:    block;
 }
 
+.deleteBelow {
+    display:            none;
+}
 
+/*----------------------*/
+/*-----BOOK DETAILS-----*/
+/*----------------------*/
 
 .detail {
     width:      200px;
@@ -26,8 +36,4 @@
 
 span.book {
     margin:     10px;
-}
-
-.deleteBelow {
-    display:            none;
 }

@@ -1,0 +1,17 @@
+
+/*----------------------*/
+/*-----SEARCH BAR ------*/
+/*----------------------*/
+
+#greySearchDiv {
+    flex-flow:          column nowrap;
+}
+ 
+.searchBar {
+    margin:             10px;
+    padding:            10px;
+}
+
+#whiteSearchBorder {
+    width:              100%
+} 

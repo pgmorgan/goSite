@@ -96,7 +96,7 @@ func SignUp(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	tpl.TPL.ExecuteTemplate(w, "signup.gohtml", nil)
+	tpl.TPL.ExecuteTemplate(w, "signup2.gohtml", nil)
 }
 
 func Logout(w http.ResponseWriter, req *http.Request) {
@@ -156,5 +156,5 @@ func Login(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
-	tpl.TPL.ExecuteTemplate(w, "login.gohtml", u)
+	tpl.TPL.ExecuteTemplate(w, "login2.gohtml", u)
 }

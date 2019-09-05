@@ -20,9 +20,6 @@ body {
 a:hover {
     background-color:   rgba(200, 200, 200, 1);
 }
-#submitQuery:hover {
-    background-color:   rgba(200, 200, 200, 1);
-}
 
 /*----------------------*/
 /*--------HEADER--------*/
@@ -49,7 +46,6 @@ a:hover {
     width:              100vw;
     max-width:          1400px;
     height:             45px;
-    /* min-height:         2rem; */
     z-index:            1;
 
     /* FONT */
@@ -65,9 +61,33 @@ a:hover {
     justify-content:    space-between;
 }
 
-    /*----------------------*/
-    /*-----HEADER LOGO------*/
-    /*----------------------*/
+#headerLoggedIn {
+    /* FORMAT */
+    background-color:   rgb(245, 245, 245, 1.00);
+    border-bottom:      0.5px solid rgba(0,0,0,0.3);
+    position:           static;
+    width:              100vw;
+    max-width:          1400px;
+    height:             45px;
+    z-index:            1;
+
+    /* FONT */
+    font-weight:        bold;
+    font-family:        'Roboto', sans-serif;
+    font-size:          1.rem;
+    text-transform:     uppercase;
+
+    /* FLEXBOX */
+    display:            flex;
+    flex-flow:          row nowrap;
+    align-items:        center;
+    justify-content:    space-between;
+}
+
+
+/*----------------------*/
+/*-----HEADER LOGO------*/
+/*----------------------*/
 
 a#logo                  {
     font-family:   'Righteous', sans-serif; 
@@ -85,9 +105,9 @@ a#logo, a.menuButton    {
     border-radius: 0.4rem;
 }
 
-    /*----------------------*/
-    /*-------NAV MENU-------*/
-    /*----------------------*/
+/*----------------------*/
+/*-------NAV MENU-------*/
+/*----------------------*/
 
 a.menuButton {
     padding:       11px 2.0vw;
@@ -100,35 +120,14 @@ a.menuButton {
     justify-content:    flex-end;
 }
 
-.burgerMenu {
-    display:    none;
-}
-
-#dropdownContent {
-    display:            none;
-}
-
-.dropdownContentClass {
-    display:            none;
-}
-
 /*----------------------*/
-/* ---PAGE FOLD IMAGE---*/
+/*---PAGE FOLD GENERAL--*/
 /*----------------------*/
-
-/* @media (min-width: 601px) { */
-    /* div#pageFold {
-        background-image:   url(bookshelf1.jpg);
-    } */
-/* } */
 
 div#pageFold   {
-    /* height:         100%; */
-    /* min-height:             94vh; */
     display:            flex;
     justify-content:    space-around;  
 }
-
 
 div#behindNav {
     height:             4.5vh;
@@ -137,8 +136,6 @@ div#behindNav {
 .centerBody {
     width:              100vw;
     max-width:          1400px;
-    /* border:             2px solid hotpink; */
-    
     display:            flex;
     flex-flow:          column nowrap;
     justify-content:    start;
@@ -148,7 +145,6 @@ div#behindNav {
     height:             100%;
     background-repeat:  repeat;
     background-attachment: fixed;
-    /* background-position:    center; */
     background-size:    cover;
 }
 
@@ -156,13 +152,15 @@ div.spacer {
     height:             30px;
 }
 
-#searchForm {
-    /* display:            flex; */
-    /* flex-flow:          row nowrap; */
+div#topSpacer {
+    height:             45px;
 }
 
+/*----------------------*/
+/*-----SEARCH BAR ------*/
+/*----------------------*/
+
 #greySearchDiv {
-    /* height:             3.25rem; */
     width:              100%;
     padding:            5px 3px;
     display:            flex;
@@ -174,11 +172,8 @@ div.spacer {
     border-radius:      0.3rem;
 }
 
-#searchBar {
-    /* width:              70%; */
-    /* width:              40vw; */
+.searchBar {
     height:             2.5rem;
-    /* border:             5px solid black; */
     border-radius:      0.3rem;
     margin:             0 0 0 5px;
     padding:            0 0 0 10px;
@@ -189,7 +184,6 @@ div.spacer {
 }
 
 #submitQuery {
-    /* width:              30%; */
     height:             2.5rem;
     margin:             0 5px 0 5px;
     background-color:   rgba(140, 140, 140, 1);
@@ -202,6 +196,11 @@ div.spacer {
     flex-shrink:        1;
 }
 
+#submitQuery:hover {
+    background-color:   rgba(200, 200, 200, 1);
+}
+
+
 #whiteSearchBorder {
     width:              70vw;
     max-width:          700px;
@@ -210,6 +209,10 @@ div.spacer {
     border-radius:      0.3rem;
     border:             1px solid black;
 }
+
+/*----------------------*/
+/*-----BOOK DETAILS-----*/
+/*----------------------*/
 
 img {
     border:             2px solid black;
@@ -233,8 +236,6 @@ span.bookDetails {
     border-left:        2px solid black;
     border-top:         2px solid black;
     border-bottom:      2px solid black;
-    /* position:           relative; */
-    /* width:               */
 }
 
 .detail {
@@ -270,14 +271,6 @@ div#allBooks {
 
 .italics {
     font-style:         italic;    
-}
-/* 
-a {
-    z-index:            1;
-} */
-
-div#topSpacer {
-    height:             45px;
 }
 
 

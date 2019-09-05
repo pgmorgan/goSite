@@ -2,31 +2,29 @@
 /*--------HEADER--------*/
 /*----------------------*/
 
-#header  {
+#header {
     justify-content:    space-between;
     position:           static;
 }
 
-    /*----------------------*/
-    /*-----HEADER LOGO------*/
-    /*----------------------*/
+#headerLoggedIn  {
+    justify-content:    space-between;
+    position:           static;
+}
+
+/*----------------------*/
+/*----------------------*/
+/*-----HEADER LOGO------*/
+/*----------------------*/
 
 a#logo                  {
     font-size:      1.0rem;
 }
 
-/* div#pageFold   { */
-    /* background-image:   url(../images/background-photo-mobile.jpg); */
-/* } */
-
-/* #topSpacer { */
-    /* display:            none; */
-/* } */
+/*----------------------*/
+/*-----SEARCH BAR-------*/
+/*----------------------*/
 
 #whiteSearchBorder {
     width:              98vw;
 }
-
-/* .deleteBelow {
-    display:            none;
-} */

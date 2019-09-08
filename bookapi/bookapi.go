@@ -47,7 +47,7 @@ type JsonObject struct {
 func FindTopTen(title string) (JsonObjects, error) {
 	uri := "https://www.googleapis.com/books/v1/volumes?q=" +
 		url.QueryEscape(title) +
-		"&key=AIzaSyCysdPDapS3TvjGhE1ZxMplLol4MQgR9Ks"
+		"&key=AIzaSyDDCSRQjzEsImvuq-so382FAd1v9Jk03Wg"
 	obj := JsonObjects{}
 
 	clientTimeout := http.Client{
@@ -77,7 +77,7 @@ func FindTopTen(title string) (JsonObjects, error) {
 
 func FindOne(id string) (JsonObject, error) {
 	uri := "https://www.googleapis.com/books/v1/volumes/" + id +
-		"?key=AIzaSyCysdPDapS3TvjGhE1ZxMplLol4MQgR9Ks"
+		"?key=AIzaSyDDCSRQjzEsImvuq-so382FAd1v9Jk03Wg"
 	obj := JsonObject{}
 
 	clientTimeout := http.Client{

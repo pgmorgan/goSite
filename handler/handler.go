@@ -12,10 +12,17 @@ import (
 	"github.com/pgmorgan/goSite/users"
 )
 
+/*	INDEX HANDLER - SERVES INDEX PAGE	*/
 func Index(w http.ResponseWriter, req *http.Request) {
+	/*	AlreadyLoggedIn() method checks the browser cookie which
+	**	is linked to a user account in a map[string]string{}.
+	**	If the cookie and user are stored in the map it returns
+	**	true, email
+	 */
 	userEmail, loggedIn := users.AlreadyLoggedIn(req)
 	var err error
 	var list []db.Book
+	/*	If not logged in, you can insert/remove books from a public account	*/
 	if loggedIn {
 		list, err = db.DBlist(userEmail)
 	} else {
@@ -38,6 +45,7 @@ func Index(w http.ResponseWriter, req *http.Request) {
 	tpl.TPL.ExecuteTemplate(w, "index.gohtml", data)
 }
 
+/*	INSERT BOOK HANDLER - Not exported.  Called from Add() handler below	*/
 func insert(w http.ResponseWriter, req *http.Request, book db.Book) {
 	var err error
 
@@ -55,6 +63,7 @@ func insert(w http.ResponseWriter, req *http.Request, book db.Book) {
 	http.Redirect(w, req, "/", http.StatusSeeOther)
 }
 
+/*	DELETE BOOK HANDLER	*/
 func Delete(w http.ResponseWriter, req *http.Request) {
 	var err error
 
@@ -73,6 +82,7 @@ func Delete(w http.ResponseWriter, req *http.Request) {
 	http.Redirect(w, req, "/", http.StatusSeeOther)
 }
 
+/*	SEARCH FOR TOP TEN BOOK MATCHES HANDLER	*/
 func Search(w http.ResponseWriter, req *http.Request) {
 	_, loggedIn := users.AlreadyLoggedIn(req)
 	title := req.FormValue("title")
@@ -93,6 +103,7 @@ func Search(w http.ResponseWriter, req *http.Request) {
 	tpl.TPL.ExecuteTemplate(w, "searchResults.gohtml", data)
 }
 
+/*	ADD BOOK HANDLER - Checks if book is already in the collection and calls insert() method above */
 func Add(w http.ResponseWriter, req *http.Request) {
 	var err error
 	var alreadyListed bool
@@ -113,8 +124,6 @@ func Add(w http.ResponseWriter, req *http.Request) {
 	}
 	result, err := bookapi.FindOne(id)
 
-	// Currency: req.FormValue("currency"),
-
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError)+
 			err.Error(), http.StatusInternalServerError)
@@ -131,10 +140,3 @@ func Add(w http.ResponseWriter, req *http.Request) {
 	}
 	insert(w, req, book)
 }
-
-// fmt.Println("Reached here!")
-// http.Redirect(w, req, "/insert"+
-// 	"?title="+result.VolumeInfo.Title+
-// 	"&author="+result.VolumeInfo.Author[0]+
-// 	"&thumb="+url.PathEscape(result.VolumeInfo.ImgLink.Thumb),
-// 	http.StatusSeeOther)

@@ -2,11 +2,15 @@ package bookapi
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 )
+
+/*	STRUCTS TO READ JSON FROM GOOGLE BOOKS API	*/
 
 type Volume struct {
 	Title   string     `json:"title"`
@@ -44,11 +48,16 @@ type JsonObject struct {
 	ID         string `json:"id"`
 }
 
+/*	METHOD TO FIND TOP TEN MATCHES FROM GOOGLE BOOK API	*/
 func FindTopTen(title string) (JsonObjects, error) {
-	uri := "https://www.googleapis.com/books/v1/volumes?q=" +
-		url.QueryEscape(title) +
-		"&key=AIzaSyDDCSRQjzEsImvuq-so382FAd1v9Jk03Wg"
 	obj := JsonObjects{}
+	apiKey, exists := os.LookupEnv("GOOGLE_DEV_API_KEY")
+	if !exists {
+		return obj, errors.New(`Missing GOOGLE_DEV_API_KEY environment
+								 variable in .env file at root of repository.`)
+	}
+	uri := "https://www.googleapis.com/books/v1/volumes?q=" +
+		url.QueryEscape(title) + "&key=" + apiKey
 
 	clientTimeout := http.Client{
 		Timeout: time.Second * 10,
@@ -75,10 +84,15 @@ func FindTopTen(title string) (JsonObjects, error) {
 	return obj, nil
 }
 
+/*	METHOD TO FETCH ONE BOOK BY ID ONCE CHOSEN BY USER	*/
 func FindOne(id string) (JsonObject, error) {
-	uri := "https://www.googleapis.com/books/v1/volumes/" + id +
-		"?key=AIzaSyDDCSRQjzEsImvuq-so382FAd1v9Jk03Wg"
 	obj := JsonObject{}
+	apiKey, exists := os.LookupEnv("GOOGLE_DEV_API_KEY")
+	if !exists {
+		return obj, errors.New(`Missing GOOGLE_DEV_API_KEY environment
+								 variable in .env file at root of repository.`)
+	}
+	uri := "https://www.googleapis.com/books/v1/volumes/" + id + "?key=" + apiKey
 
 	clientTimeout := http.Client{
 		Timeout: time.Second * 10,

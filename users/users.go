@@ -18,13 +18,15 @@ type user struct {
 	Password []byte
 }
 
-var dbSessions = map[string]string{} // session ID, user ID
-var dbUsers = map[string]user{}      // user ID, user
+var dbSessions = map[string]string{} /* [session_ID]user_ID	*/
+var dbUsers = map[string]user{}      /* [user_ID]user	*/
 
 func init() {
 	populateDbUsers()
 }
 
+/*	"./user" file contains CSV records of User email and hashed password.
+	populateDbUsers() reads this CSV and populates dbUsers map.	*/
 func populateDbUsers() {
 	f, _ := os.Open("./user")
 	defer f.Close()
@@ -39,14 +41,56 @@ func populateDbUsers() {
 	}
 }
 
+/*	AlreadyLoggedIn compares the cookie stored in the request and
+**	the cookie sessionID stored in the dbSessions map.  If they
+**	match we are currently logged into the accout of userID
+ */
 func AlreadyLoggedIn(req *http.Request) (string, bool) {
 	c, err := req.Cookie("session")
 	if err != nil {
 		return "", false
 	}
-	em := dbSessions[c.Value]
-	_, ok := dbUsers[em]
-	return em, ok
+	userID := dbSessions[c.Value]
+	_, ok := dbUsers[userID]
+	return userID, ok
+}
+
+/*	Login() handler	compares passwords, generates a cookie and writes it to the
+**	browser as well as to an index of dbSessions map.
+ */
+func Login(w http.ResponseWriter, req *http.Request) {
+	if _, ok := AlreadyLoggedIn(req); ok {
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	var u user
+	/* process form submission	*/
+	if req.Method == http.MethodPost {
+		em := req.FormValue("email")
+		p := req.FormValue("password")
+		u, ok := dbUsers[em]
+		if !ok {
+			http.Error(w, "<h2>Username and/or password do not match</h2>", http.StatusForbidden)
+			return
+		}
+		/* does the entered password match the stored password?	*/
+		err := bcrypt.CompareHashAndPassword(u.Password, []byte(p))
+		if err != nil {
+			http.Error(w, "Username and/or password do not match", http.StatusForbidden)
+			return
+		}
+		/* create session	*/
+		sID, _ := uuid.NewV4()
+		c := &http.Cookie{
+			Name:  "session",
+			Value: sID.String(),
+		}
+		http.SetCookie(w, c)
+		dbSessions[c.Value] = em
+		http.Redirect(w, req, "/", http.StatusSeeOther)
+		return
+	}
+	tpl.TPL.ExecuteTemplate(w, "login.gohtml", u)
 }
 
 func SignUp(w http.ResponseWriter, req *http.Request) {
@@ -55,18 +99,18 @@ func SignUp(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	var u user
-	// process form submission
+	/* process form submission	*/
 	if req.Method == http.MethodPost {
 		// get form values
 		em := req.FormValue("email")
 		p := req.FormValue("password")
 
-		// username taken?
+		/* username taken?	*/
 		if _, ok := dbUsers[em]; ok {
 			http.Error(w, "Username already taken", http.StatusForbidden)
 			return
 		}
-		// create session
+		/* create session	*/
 		sID, _ := uuid.NewV4()
 		c := &http.Cookie{
 			Name:  "session",
@@ -74,7 +118,7 @@ func SignUp(w http.ResponseWriter, req *http.Request) {
 		}
 		http.SetCookie(w, c)
 		dbSessions[c.Value] = em
-		// store user in dbUsers
+		/* store user in dbUsers map	*/
 		bs, err := bcrypt.GenerateFromPassword([]byte(p), bcrypt.MinCost)
 		if err != nil {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -92,7 +136,7 @@ func SignUp(w http.ResponseWriter, req *http.Request) {
 		_, err = f.Write(csv)
 		check(err)
 
-		// redirect
+		/* redirect	*/
 		http.Redirect(w, req, "/", http.StatusSeeOther)
 		return
 	}
@@ -105,9 +149,9 @@ func Logout(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 	c, _ := req.Cookie("session")
-	// delete the session
+	/* delete the session	*/
 	delete(dbSessions, c.Value)
-	// remove the cookie
+	/* remove the cookie	*/
 	c = &http.Cookie{
 		Name:   "session",
 		Value:  "",
@@ -122,39 +166,4 @@ func check(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func Login(w http.ResponseWriter, req *http.Request) {
-	if _, ok := AlreadyLoggedIn(req); ok {
-		http.Redirect(w, req, "/", http.StatusSeeOther)
-		return
-	}
-	var u user
-	// process form submission
-	if req.Method == http.MethodPost {
-		em := req.FormValue("email")
-		p := req.FormValue("password")
-		u, ok := dbUsers[em]
-		if !ok {
-			http.Error(w, "<h2>Username and/or password do not match</h2>", http.StatusForbidden)
-			return
-		}
-		// does the entered password match the stored password?
-		err := bcrypt.CompareHashAndPassword(u.Password, []byte(p))
-		if err != nil {
-			http.Error(w, "Username and/or password do not match", http.StatusForbidden)
-			return
-		}
-		// create session
-		sID, _ := uuid.NewV4()
-		c := &http.Cookie{
-			Name:  "session",
-			Value: sID.String(),
-		}
-		http.SetCookie(w, c)
-		dbSessions[c.Value] = em
-		http.Redirect(w, req, "/", http.StatusSeeOther)
-		return
-	}
-	tpl.TPL.ExecuteTemplate(w, "login.gohtml", u)
 }

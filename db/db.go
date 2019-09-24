@@ -2,31 +2,48 @@ package db
 
 import (
 	"context"
+	"errors"
 	"log"
 	"net/url"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-//Book holds the Author and Title strings
 type Book struct {
 	Title, URLtitle, Author, ID, Price, BuyLink, ThumbURL string
 }
 
-var wait time.Duration
+var wait time.Duration = 10
 var globClient *mongo.Client
 var globCollection *mongo.Collection
 var dbName = "bookstore"
 
-func dbConnect(user, password, clusterName, dbName string) (*mongo.Client, error) {
+func init() {
+	var err error
+	if globClient, err = dbConnect(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+/*	CONNECTION TO DATABASE - Called by init()	*/
+func dbConnect() (*mongo.Client, error) {
+	if err := godotenv.Load("./dev.env"); err != nil {
+		return nil, errors.New(`No .env file found at root of repository.
+		Must set the following environment variables:\n
+		MONGODB_URL=<MongoDB Connection String>\n
+		GOOGLE_DEV_API_KEY=<API Key from https://console.developers.google.com>\n`)
+	}
+	uri, exists := os.LookupEnv("MONGODB_URL")
+	if !exists {
+		return nil, errors.New(`Missing MONGODB_URL environment variable in .env file at root of repository`)
+	}
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
-	// uri := "mongodb://localhost:27017"
-	uri := "mongodb+srv://" + user + ":" + password + "@" + clusterName +
-		"-a6bbr.mongodb.net/" + dbName + "?retryWrites=true&w=majority&authSource=admin"
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, err
@@ -38,6 +55,7 @@ func dbConnect(user, password, clusterName, dbName string) (*mongo.Client, error
 	return client, nil
 }
 
+/*	DATABASE ENTRY CREATION */
 func DBinsertOne(book Book, userEmail string) error {
 	coll := globClient.Database(dbName).Collection(userEmail)
 	ctx, _ := context.WithTimeout(context.Background(), wait*time.Second)
@@ -45,7 +63,6 @@ func DBinsertOne(book Book, userEmail string) error {
 	doc["Title"] = book.Title
 	doc["Author"] = book.Author
 	doc["Price"] = book.Price
-	// doc["Currency"] = book.Currency
 	doc["BuyLink"] = book.BuyLink
 	doc["ID"] = book.ID
 	doc["ThumbURL"] = book.ThumbURL
@@ -56,6 +73,7 @@ func DBinsertOne(book Book, userEmail string) error {
 	return nil
 }
 
+/*	DATABASE ENTRY READING */
 func DBlist(userEmail string) ([]Book, error) {
 	var result bson.M
 	var list []Book
@@ -90,11 +108,6 @@ func DBlist(userEmail string) ([]Book, error) {
 		} else {
 			tmp.Price = result["Price"].(string)
 		}
-		// if result["Currency"] == nil {
-		// tmp.Currency = ""
-		// } else {
-		// tmp.Currency = result["Currency"].(string)
-		// }
 		if result["BuyLink"] == nil {
 			tmp.BuyLink = ""
 		} else {
@@ -110,6 +123,7 @@ func DBlist(userEmail string) ([]Book, error) {
 	return list, nil
 }
 
+/*	DATABASE ENTRY REMOVAL	*/
 func DBdeleteOne(title, userEmail string) error {
 	coll := globClient.Database(dbName).Collection(userEmail)
 	filter := bson.D{{
@@ -126,6 +140,7 @@ func DBdeleteOne(title, userEmail string) error {
 	return nil
 }
 
+/*	DATABASE ENTRY DUPLICATE CHECK	*/
 func DBidAlreadyListed(id, userEmail string) (bool, error) {
 	var result bson.M
 
@@ -146,19 +161,4 @@ func DBidAlreadyListed(id, userEmail string) (bool, error) {
 		}
 	}
 	return false, nil
-}
-
-func init() {
-	var err error
-
-	wait = 10
-	atlasUser := "root"
-	atlasPassword := "root"
-	clusterName := "cluster0"
-
-	globClient, err = dbConnect(atlasUser, atlasPassword, clusterName, dbName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	// fmt.Println(globClient)
 }

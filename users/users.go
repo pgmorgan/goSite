@@ -28,7 +28,11 @@ func init() {
 /*	"./user" file contains CSV records of User email and hashed password.
 	populateDbUsers() reads this CSV and populates dbUsers map.	*/
 func populateDbUsers() {
-	f, _ := os.Open("./user")
+	f, err := os.Open("./user")
+	if err != nil {
+		log.Fatalln(`Error: Ensure there is an empty file named "user" 
+		at the root of this repository before running this application.`)
+	}
 	defer f.Close()
 	r := csv.NewReader(bufio.NewReader(f))
 	r.Comma = ';'

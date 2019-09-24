@@ -1,10 +1,12 @@
 #   Bookshelf App - REST API & Frontend
 
+A working version of this application can be found at [mybookshelfapp.com](http://www.mybookshelfapp.com)
+
 This project is a Bookshelf app built with with Go and MongoDB (Backend), as well as HTML5/CSS3 (Frontend).  This app lets users build personalized lists of books using the Google Books API, and store these lists of books on a MongoDB server.  Features include:
 - Near exclusive use of the Go Standard Library.  No third party frameworks.
 - Full CRUD features for Book entries.
 - Session tracking and authentication with Unique Universal Identifiers (UUIDs) written to browser Cookies.
-- Hash encryption of password
+- Hash encryption of user passwords
 - Responsive frontend design for all browser sizes
 
 ### SETUP INSTRUCTIONS
